@@ -1,0 +1,664 @@
+// LoginPage.less — DELIBERATELY tacky Y2K / GeoCities aesthetic.
+// This is the ONE screen that ignores the dark design system.
+// DO NOT @import theme.less. Everything is scoped under .y2k so nothing leaks.
+
+.y2k {
+  font-family: "Comic Sans MS", "Comic Sans", "Chalkboard", cursive;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px 12px 48px;
+  overflow-x: hidden;
+  color: #000080;
+  text-align: center;
+
+  // Clashing layered animated background: rainbow hue-rotate over a checkerboard
+  // plus a diagonal candy-stripe overlay.
+  background-color: #008080;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 0, 255, 0.25) 0 20px,
+      rgba(0, 255, 255, 0.25) 20px 40px
+    ),
+    conic-gradient(
+      from 0deg,
+      #ff00ff,
+      #00ffff,
+      #ffff00,
+      #00ff00,
+      #ff0000,
+      #ff00ff
+    ),
+    linear-gradient(#ffffff 25%, transparent 25%, transparent 75%, #ffffff 75%);
+  background-size: 56px 56px, 220px 220px, 40px 40px;
+  background-blend-mode: overlay, normal, normal;
+  animation: y2k-rainbow 8s linear infinite;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  @keyframes y2k-rainbow {
+    from {
+      filter: hue-rotate(0deg);
+    }
+    to {
+      filter: hue-rotate(360deg);
+    }
+  }
+
+  // ---- Scrolling marquee banner (no deprecated <marquee>) ----
+  &__marquee {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    background: #000000;
+    color: #00ff00;
+    border: 4px ridge #ffff00;
+    padding: 6px 0;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  &__marquee-track {
+    display: inline-block;
+    padding-left: 100%;
+    animation: y2k-scroll 22s linear infinite;
+  }
+
+  @keyframes y2k-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  // ---- Centered login card ----
+  &__card {
+    max-width: 560px;
+    margin: 0 auto;
+    background: #c0c0c0;
+    border: 6px outset #ffffff;
+    border-radius: 6px;
+    padding: 20px 18px 24px;
+    box-shadow:
+      0 0 0 4px #ff00ff,
+      0 0 0 8px #00ffff,
+      8px 8px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  // ---- WordArt-style title ----
+  &__wordart {
+    font-size: 30px;
+    line-height: 1.15;
+    font-weight: bold;
+    margin: 4px 0 14px;
+    letter-spacing: 1px;
+    transform: rotate(-2deg);
+    background: linear-gradient(
+      90deg,
+      #ff0000,
+      #ff8000,
+      #ffff00,
+      #00ff00,
+      #00ffff,
+      #0000ff,
+      #ff00ff
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+      2px 2px 0 #000000,
+      -1px -1px 0 #ffffff;
+    animation: y2k-wobble 3s ease-in-out infinite;
+  }
+
+  @keyframes y2k-wobble {
+    0%,
+    100% {
+      transform: rotate(-2deg) scale(1);
+    }
+    50% {
+      transform: rotate(2deg) scale(1.03);
+    }
+  }
+
+  // ---- Blinking (decorative only) ----
+  &__blink {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff0000;
+    margin: 8px 0;
+    animation: y2k-blink 1s steps(1) infinite;
+  }
+
+  @keyframes y2k-blink {
+    50% {
+      visibility: hidden;
+    }
+  }
+
+  // ---- Under construction caution strip ----
+  &__construction {
+    margin: 12px 0;
+    padding: 8px 4px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #000000;
+    text-shadow: 1px 1px 0 #ffffff;
+    border: 3px dashed #000000;
+    background: repeating-linear-gradient(
+      45deg,
+      #ffff00 0 18px,
+      #000000 18px 36px
+    );
+    // keep text legible on top of stripes
+    background-color: #ffff00;
+    background-blend-mode: normal;
+  }
+
+  &__tagline {
+    font-size: 15px;
+    color: #800080;
+    margin: 14px 6px;
+    font-weight: bold;
+  }
+
+  // ---- The BIG beveled login button (focal action) ----
+  &__login {
+    font-family: inherit;
+    display: inline-block;
+    width: 100%;
+    max-width: 480px;
+    margin: 10px auto;
+    padding: 18px 16px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000080;
+    cursor: pointer;
+    background: linear-gradient(#ffff66, #ffcc00);
+    border: 8px outset #ffff00;
+    border-radius: 4px;
+    text-shadow: 1px 1px 0 #ffffff;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(#ffffaa, #ffdd33);
+    }
+
+    &:active:not(:disabled) {
+      border-style: inset;
+      box-shadow: none;
+      transform: translate(2px, 2px);
+    }
+
+    &:focus-visible {
+      outline: 4px dashed #ff00ff;
+      outline-offset: 3px;
+    }
+
+    &:disabled {
+      cursor: progress;
+      color: #333333;
+      background: linear-gradient(#dddddd, #aaaaaa);
+      border-color: #999999;
+    }
+  }
+
+  // busy label spins/blinks (decorative styling, text stays readable)
+  &__login-busy {
+    display: inline-block;
+    animation: y2k-pulse 0.8s ease-in-out infinite;
+  }
+
+  @keyframes y2k-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 0.6;
+    }
+  }
+
+  &__nosupport {
+    margin: 12px 0;
+    padding: 12px;
+    font-weight: bold;
+    color: #000080;
+    background: #ffffcc;
+    border: 4px ridge #ff00ff;
+    border-radius: 4px;
+    line-height: 1.6;
+  }
+
+  // ---- Loud red retro alert box ----
+  &__alert {
+    margin: 16px 0;
+    padding: 12px 14px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #ffffff;
+    background: #ff0000;
+    border: 5px outset #ff6666;
+    border-radius: 4px;
+    text-shadow: 1px 1px 0 #660000;
+    box-shadow: 0 0 12px #ff0000;
+  }
+
+  &__alert-icon {
+    margin-right: 6px;
+  }
+
+  // ---- Fake hit counter ----
+  &__counter {
+    margin: 18px 0 8px;
+    font-weight: bold;
+    color: #000080;
+  }
+
+  &__counter-label {
+    margin-right: 8px;
+  }
+
+  &__odometer {
+    display: inline-flex;
+    gap: 2px;
+    vertical-align: middle;
+  }
+
+  &__digit {
+    font-family: "Courier New", monospace;
+    display: inline-block;
+    min-width: 20px;
+    padding: 3px 4px;
+    background: #000000;
+    color: #00ff00;
+    border: 2px inset #444444;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  // ---- Fake webring nav ----
+  &__webring {
+    margin: 14px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+  }
+
+  &__ring-link {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #0000ff;
+    color: #ffff00;
+    border: 3px outset #6666ff;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  &__ring-sep {
+    color: #800080;
+  }
+
+  &__stars {
+    font-size: 20px;
+    margin: 10px 0;
+    letter-spacing: 4px;
+  }
+
+  // ---- Reverse (bottom) marquee ----
+  &__marquee--rev {
+    margin-top: 20px;
+    margin-bottom: 0;
+    color: #ff00ff;
+    border-color: #00ffff;
+  }
+  &__marquee-track--rev {
+    animation-direction: reverse;
+    animation-duration: 27s;
+  }
+
+  // ---- Unrelated banner "ad" ----
+  &__banner {
+    max-width: 760px;
+    margin: 0 auto 18px;
+    padding: 10px 12px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #ffff00;
+    text-shadow: 1px 1px 0 #000000;
+    border: 4px ridge #ffff00;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #ff0000, #ff8000, #ff0000);
+    background-size: 200% 100%;
+    animation: y2k-banner 3s linear infinite;
+  }
+  @keyframes y2k-banner {
+    to {
+      background-position: 200% 0;
+    }
+  }
+
+  // ---- "Now playing" MIDI widget ----
+  &__nowplaying {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px auto 6px;
+    padding: 6px 12px;
+    font-weight: bold;
+    font-size: 13px;
+    color: #00ff66;
+    background: #000000;
+    border: 3px inset #006633;
+    border-radius: 3px;
+  }
+  &__eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+    i {
+      display: block;
+      width: 3px;
+      height: 100%;
+      background: #00ff66;
+      animation: y2k-eq 0.6s ease-in-out infinite;
+    }
+    i:nth-child(2) { animation-delay: 0.15s; }
+    i:nth-child(3) { animation-delay: 0.3s; }
+    i:nth-child(4) { animation-delay: 0.45s; }
+    i:nth-child(5) { animation-delay: 0.1s; }
+  }
+  @keyframes y2k-eq {
+    0%, 100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
+  }
+
+  // ---- Fake weather widget ----
+  &__weather {
+    margin: 10px auto;
+    padding: 6px 12px;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #003366;
+    background: linear-gradient(#cfefff, #99ccff);
+    border: 3px outset #99ccff;
+    border-radius: 4px;
+    i {
+      color: #336699;
+      font-weight: normal;
+    }
+  }
+
+  // ---- Fake LED ticker ----
+  &__ticker {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 12px 0;
+    padding: 5px 0;
+    background: #1a0f00;
+    border: 3px ridge #ff9900;
+    border-radius: 3px;
+    color: #ffb000;
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+    font-size: 13px;
+    text-shadow: 0 0 4px #ff9900;
+  }
+  &__ticker-track {
+    display: inline-block;
+    padding-left: 100%;
+    animation: y2k-scroll 18s linear infinite;
+  }
+
+  // ---- Award badges ----
+  &__awards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin: 16px 0;
+  }
+  &__award {
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 3px;
+    border: 2px outset;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+    &--ns { background: #000066; color: #ffffff; border-color: #3333aa; }
+    &--best { background: #ffffff; color: #000080; border-color: #cccccc; }
+    &--y2k { background: #ff0000; color: #ffff00; border-color: #ff6666; }
+    &--np { background: #c0c0c0; color: #000000; border-color: #ffffff; }
+    &--html { background: #ffcc00; color: #663300; border-color: #ffdd66; }
+  }
+
+  // ---- Fake guestbook nav ----
+  &__guestbook {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  &__gb-link {
+    display: inline-block;
+    padding: 4px 10px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #ffffff;
+    background: #cc0066;
+    border: 3px outset #ff3399;
+    border-radius: 3px;
+    cursor: pointer;
+    &:hover { background: #ff0080; }
+  }
+
+  // ---- Self-registration section ----
+  &__divider {
+    margin: 20px 0 12px;
+    color: #800080;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+
+  &__toggle {
+    font-family: inherit;
+    display: inline-block;
+    padding: 8px 14px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffff00;
+    background: #0000cc;
+    border: 4px outset #6666ff;
+    border-radius: 3px;
+    cursor: pointer;
+    text-shadow: 1px 1px 0 #000000;
+
+    &:hover {
+      background: #0000ff;
+    }
+    &:active {
+      border-style: inset;
+      transform: translate(1px, 1px);
+    }
+    &:focus-visible {
+      outline: 3px dashed #ff00ff;
+      outline-offset: 2px;
+    }
+  }
+
+  &__register {
+    margin: 14px 0 6px;
+    padding: 16px 14px;
+    text-align: left;
+    background: #ccffcc;
+    border: 5px ridge #00cc00;
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 3px #ffffff;
+  }
+
+  &__reg-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 10px;
+    color: #cc0066;
+    text-shadow: 1px 1px 0 #ffffff;
+    animation: y2k-blink 1.6s steps(1) infinite;
+  }
+
+  &__reg-intro {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #004400;
+    margin: 0 0 14px;
+  }
+
+  &__field {
+    display: block;
+    margin: 0 0 12px;
+  }
+
+  &__field-label {
+    display: block;
+    font-weight: bold;
+    color: #000080;
+    margin-bottom: 4px;
+  }
+
+  &__input {
+    font-family: "Courier New", monospace;
+    width: 100%;
+    padding: 10px 10px;
+    font-size: 16px;
+    color: #000000;
+    background: #ffffff;
+    border: 3px inset #808080;
+    border-radius: 2px;
+
+    &:focus {
+      outline: 3px dashed #ff00ff;
+      outline-offset: 1px;
+    }
+    &:disabled {
+      background: #dddddd;
+      color: #777777;
+    }
+  }
+
+  // green variant of the big beveled button, for "register"
+  &__login--reg {
+    background: linear-gradient(#99ff99, #33cc33);
+    border-color: #66ff66;
+    color: #003300;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(#bbffbb, #55dd55);
+    }
+  }
+
+  // cyan variant, for "copy"
+  &__login--copy {
+    background: linear-gradient(#99ffff, #33cccc);
+    border-color: #66ffff;
+    color: #003333;
+    font-size: 16px;
+    padding: 12px 14px;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(#bbffff, #55dddd);
+    }
+  }
+
+  &__enroll {
+    margin-top: 14px;
+  }
+
+  &__enroll-ok {
+    font-weight: bold;
+    color: #007700;
+    margin: 0 0 8px;
+    animation: y2k-pulse 1s ease-in-out infinite;
+  }
+
+  &__enrollment {
+    font-family: "Courier New", monospace;
+    width: 100%;
+    padding: 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #00ff00;
+    background: #000000;
+    border: 3px inset #444444;
+    border-radius: 2px;
+    resize: vertical;
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
+  &__reg-tip {
+    margin: 12px 0 0;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #663300;
+    background: #ffffcc;
+    border: 2px dashed #cc9900;
+    border-radius: 3px;
+  }
+
+  &__footer {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #000080;
+    border-top: 2px groove #808080;
+    padding-top: 8px;
+  }
+
+  // ---- Respect reduced-motion for the animation-heavy chrome ----
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &__marquee-track,
+    &__wordart,
+    &__blink,
+    &__login-busy,
+    &__reg-title,
+    &__enroll-ok,
+    &__banner,
+    &__ticker-track,
+    &__eq i {
+      animation: none;
+    }
+    &__blink,
+    &__reg-title {
+      visibility: visible;
+    }
+  }
+
+  // ---- Phone responsiveness ----
+  @media (max-width: 600px) {
+    &__wordart {
+      font-size: 22px;
+    }
+    &__login {
+      font-size: 16px;
+      padding: 14px 10px;
+    }
+  }
+}

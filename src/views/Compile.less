@@ -1,0 +1,70 @@
+@import "../styles/theme.less";
+
+// Inline magnitude bar shown under the "Tripy" cell in the compilations table.
+.size-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  min-width: 64px;
+
+  &__val {
+    .tnum();
+  }
+}
+
+.size-bar {
+  display: block;
+  width: 100%;
+  height: 3px;
+  border-radius: @radius-pill;
+  background: @surface-2;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--w, 0%);
+    background: @accent;
+    border-radius: inherit;
+  }
+}
+
+// Per-city size summary cards below the table.
+.compile-city {
+  &__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: @sp-3;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: @fs-xs;
+    color: @text-muted;
+  }
+
+  &__num {
+    font-size: @fs-lg;
+    font-weight: @fw-semibold;
+    color: @text-primary;
+    .tnum();
+  }
+
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: @sp-2;
+    margin-top: @sp-4;
+    padding-top: @sp-3;
+    border-top: 1px solid @border;
+  }
+}

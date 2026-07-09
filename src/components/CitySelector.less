@@ -1,0 +1,59 @@
+@import "../styles/theme.less";
+
+.city-sel {
+  display: inline-flex;
+  align-items: center;
+  gap: @sp-2;
+
+  &__label {
+    font-size: @fs-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: @text-muted;
+    font-weight: @fw-medium;
+  }
+
+  &__control {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    select {
+      appearance: none;
+      height: 32px;
+      padding: 0 @sp-6 0 @sp-3;
+      border-radius: @radius;
+      background: @surface-3;
+      border: 1px solid @border;
+      color: @text-primary;
+      font-size: @fs-sm;
+      font-weight: @fw-medium;
+      cursor: pointer;
+      transition: border-color @dur @ease;
+
+      &:hover {
+        border-color: @border-strong;
+      }
+      &:focus-visible {
+        .focus-ring();
+      }
+      &:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      option {
+        background: @surface-2;
+        color: @text-primary;
+      }
+    }
+  }
+
+  &__caret {
+    position: absolute;
+    right: @sp-2 + 2;
+    pointer-events: none;
+    font-size: 10px;
+    color: @text-muted;
+  }
+}

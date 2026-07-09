@@ -1,0 +1,204 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Dark theme design tokens for the admin panel.
+// (The Y2K login page deliberately ignores all of this and ships its own gaudy
+//  stylesheet — see views/LoginPage.less.)
+//
+// LESS variables drive component styling; the mirrored :root custom properties
+// let JS (uPlot / canvas heatmap, see theme/palette.ts) read the same values.
+// Keep the two in sync.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Surfaces (bluish neutral dark, layered by elevation)
+@surface-0: #0b0e14; // page background
+@surface-1: #141922; // cards / panels
+@surface-2: #1c2431; // elevated / hover
+@surface-3: #10151d; // inputs / wells
+@surface-inset: #0e131b;
+
+// Borders
+@border: #212836;
+@border-strong: #2f3a49;
+@border-focus: #3987e5;
+
+// Ink
+@text-primary: #e6ebf3;
+@text-secondary: #9aa7b8;
+@text-muted: #6b7688;
+@text-faint: #4a5361;
+
+// Brand / accent (== series slot 1)
+@accent: #3987e5;
+@accent-hover: #5598e7;
+@accent-quiet: fade(#3987e5, 14%);
+@accent-2: #199e70; // aqua secondary
+
+// Status (reserved — mirrors theme/palette STATUS; ship with icon + label)
+@good: #0ca30c;
+@warning: #fab219;
+@serious: #ec835a;
+@critical: #d03b3b;
+@good-quiet: fade(#0ca30c, 16%);
+@warning-quiet: fade(#fab219, 16%);
+@critical-quiet: fade(#d03b3b, 16%);
+
+// Chart chrome
+@grid: #212836;
+@axis: #2f3a49;
+
+// Categorical series (dataviz reference dark set)
+@series-1: #3987e5;
+@series-2: #199e70;
+@series-3: #c98500;
+@series-4: #008300;
+@series-5: #9085e9;
+@series-6: #e66767;
+@series-7: #d55181;
+@series-8: #d95926;
+
+// Typography
+@font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial,
+  sans-serif;
+@font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", ui-monospace,
+  "Consolas", "Courier New", monospace;
+
+@fs-xs: 11px;
+@fs-sm: 12px;
+@fs-base: 13px;
+@fs-md: 14px;
+@fs-lg: 16px;
+@fs-xl: 20px;
+@fs-2xl: 26px;
+@fs-3xl: 34px;
+
+@fw-normal: 400;
+@fw-medium: 500;
+@fw-semibold: 600;
+@fw-bold: 700;
+
+// Spacing scale
+@sp-1: 4px;
+@sp-2: 8px;
+@sp-3: 12px;
+@sp-4: 16px;
+@sp-5: 20px;
+@sp-6: 24px;
+@sp-8: 32px;
+@sp-10: 40px;
+@sp-12: 48px;
+
+// Radii
+@radius-sm: 5px;
+@radius: 8px;
+@radius-lg: 12px;
+@radius-pill: 999px;
+
+// Elevation
+@shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+@shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+@shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55);
+
+// Layout
+@sidebar-w: 244px;
+@topbar-h: 56px;
+@content-max: 1600px;
+
+// Breakpoints
+@bp-sm: 640px;
+@bp-md: 900px;
+@bp-lg: 1200px;
+
+// Motion
+@ease: cubic-bezier(0.4, 0, 0.2, 1);
+@dur: 140ms;
+
+// ── Mixins ──────────────────────────────────────────────────────────────────
+
+.card() {
+  background: @surface-1;
+  border: 1px solid @border;
+  border-radius: @radius-lg;
+}
+
+.focus-ring() {
+  outline: none;
+  box-shadow: 0 0 0 2px @surface-0, 0 0 0 4px @accent;
+}
+
+.truncate() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tnum() {
+  font-variant-numeric: tabular-nums;
+}
+
+.scrollbar() {
+  scrollbar-width: thin;
+  scrollbar-color: @border-strong transparent;
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: @border-strong;
+    border-radius: @radius-pill;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: lighten(@border-strong, 10%);
+    background-clip: content-box;
+  }
+}
+
+// Responsive helpers
+.mobile(@rules) {
+  @media (max-width: (@bp-md - 1px)) {
+    @rules();
+  }
+}
+.tablet-down(@rules) {
+  @media (max-width: (@bp-lg - 1px)) {
+    @rules();
+  }
+}
+.desktop(@rules) {
+  @media (min-width: @bp-lg) {
+    @rules();
+  }
+}
+
+// ── CSS custom properties (runtime mirror for JS + ad-hoc styling) ────────────
+
+:root {
+  --surface-0: @surface-0;
+  --surface-1: @surface-1;
+  --surface-2: @surface-2;
+  --surface-3: @surface-3;
+  --border: @border;
+  --border-strong: @border-strong;
+  --text-primary: @text-primary;
+  --text-secondary: @text-secondary;
+  --text-muted: @text-muted;
+  --accent: @accent;
+  --accent-hover: @accent-hover;
+  --accent-2: @accent-2;
+  --good: @good;
+  --warning: @warning;
+  --serious: @serious;
+  --critical: @critical;
+  --grid: @grid;
+  --axis: @axis;
+  --series-1: @series-1;
+  --series-2: @series-2;
+  --series-3: @series-3;
+  --series-4: @series-4;
+  --series-5: @series-5;
+  --series-6: @series-6;
+  --series-7: @series-7;
+  --series-8: @series-8;
+  --font-sans: @font-sans;
+  --font-mono: @font-mono;
+}

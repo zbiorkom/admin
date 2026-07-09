@@ -1,0 +1,49 @@
+@import "../styles/theme.less";
+
+.spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid @border-strong;
+  border-top-color: @accent;
+  animation: spinner-rot 0.7s linear infinite;
+}
+
+@keyframes spinner-rot {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.state-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: @sp-3;
+  min-height: 180px;
+  padding: @sp-8 @sp-4;
+  text-align: center;
+  color: @text-muted;
+  font-size: @fs-sm;
+
+  &__icon {
+    font-size: 30px;
+    line-height: 1;
+    color: @text-faint;
+  }
+  &__title {
+    color: @text-secondary;
+    font-size: @fs-md;
+    font-weight: @fw-semibold;
+  }
+  p {
+    max-width: 42ch;
+  }
+
+  &--error &__icon {
+    color: @critical;
+  }
+  .btn {
+    margin-top: @sp-2;
+  }
+}

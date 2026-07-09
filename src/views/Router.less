@@ -1,0 +1,51 @@
+@import "../styles/theme.less";
+
+// Origin-density heatmap card body (the card is flush, so pad here).
+.odheat {
+  display: flex;
+  flex-direction: column;
+  gap: @sp-3;
+  padding: @sp-4;
+
+  &__canvas-wrap {
+    width: 100%;
+  }
+
+  &__canvas {
+    display: block;
+    width: 100%;
+    background: @surface-inset;
+    border: 1px solid @border;
+    border-radius: @radius;
+  }
+
+  &__legend {
+    display: flex;
+    align-items: center;
+    gap: @sp-2;
+    font-size: @fs-xs;
+    color: @text-muted;
+  }
+
+  &__bar {
+    flex: 1;
+    height: 8px;
+    border-radius: @radius-pill;
+    background: linear-gradient(
+      90deg,
+      #0d366b,
+      #184f95,
+      #256abf,
+      #3987e5,
+      #6da7ec,
+      #9ec5f4,
+      #7fdcff
+    );
+  }
+
+  &__caption {
+    color: @text-muted;
+    font-size: @fs-xs;
+    .tnum();
+  }
+}

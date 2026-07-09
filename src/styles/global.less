@@ -1,0 +1,230 @@
+@import "./theme.less";
+@import "./reset.less";
+@import "./uplot.less";
+
+// Base document styling for the dark admin panel. The login route swaps the body
+// background via its own scoped rules, so keep base colors here neutral-dark.
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: @font-sans;
+  font-size: @fs-base;
+  line-height: 1.5;
+  color: @text-primary;
+  background: @surface-0;
+  .scrollbar();
+}
+
+// Typographic rhythm helpers used across views
+h1,
+h2,
+h3,
+h4 {
+  font-weight: @fw-semibold;
+  line-height: 1.25;
+  color: @text-primary;
+}
+
+code,
+kbd,
+samp {
+  font-family: @font-mono;
+  font-size: 0.92em;
+}
+
+::selection {
+  background: @accent-quiet;
+  color: @text-primary;
+}
+
+// ── Shared primitives reused by many views ──────────────────────────────────
+
+// Section heading + optional description
+.view-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: @sp-4;
+  flex-wrap: wrap;
+  margin-bottom: @sp-5;
+
+  h1 {
+    font-size: @fs-xl;
+    letter-spacing: -0.01em;
+  }
+  p {
+    color: @text-secondary;
+    font-size: @fs-sm;
+    margin-top: 2px;
+  }
+}
+
+// Responsive grid of cards; set --min per view to control column width
+.grid {
+  display: grid;
+  gap: @sp-4;
+  grid-template-columns: repeat(auto-fill, minmax(var(--min, 260px), 1fr));
+}
+
+// Generic button
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: @sp-2;
+  height: 34px;
+  padding: 0 @sp-4;
+  border-radius: @radius;
+  border: 1px solid @border-strong;
+  background: @surface-2;
+  color: @text-primary;
+  font-size: @fs-sm;
+  font-weight: @fw-medium;
+  transition: background @dur @ease, border-color @dur @ease, color @dur @ease;
+
+  &:hover {
+    background: lighten(@surface-2, 4%);
+    border-color: lighten(@border-strong, 8%);
+  }
+  &:focus-visible {
+    .focus-ring();
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: @accent;
+    border-color: @accent;
+    color: #fff;
+    &:hover {
+      background: @accent-hover;
+      border-color: @accent-hover;
+    }
+  }
+  &--ghost {
+    background: transparent;
+    border-color: transparent;
+    color: @text-secondary;
+    &:hover {
+      background: @surface-2;
+      color: @text-primary;
+    }
+  }
+  &--danger {
+    color: @critical;
+    &:hover {
+      background: @critical-quiet;
+      border-color: @critical;
+    }
+  }
+}
+
+// Status dot + pill
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  display: inline-block;
+  background: @text-muted;
+
+  &--good { background: @good; box-shadow: 0 0 8px fade(@good, 60%); }
+  &--warning { background: @warning; }
+  &--serious { background: @serious; }
+  &--critical { background: @critical; box-shadow: 0 0 8px fade(@critical, 60%); }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: @sp-1 + 2;
+  height: 22px;
+  padding: 0 @sp-2 + 2;
+  border-radius: @radius-pill;
+  font-size: @fs-xs;
+  font-weight: @fw-medium;
+  background: @surface-2;
+  border: 1px solid @border;
+  color: @text-secondary;
+  .tnum();
+
+  &--good { color: lighten(@good, 12%); border-color: fade(@good, 40%); background: @good-quiet; }
+  &--warning { color: @warning; border-color: fade(@warning, 40%); background: @warning-quiet; }
+  &--critical { color: lighten(@critical, 10%); border-color: fade(@critical, 45%); background: @critical-quiet; }
+}
+
+// Muted mono metadata (timestamps, ids)
+.meta {
+  color: @text-muted;
+  font-size: @fs-xs;
+  font-family: @font-mono;
+  .tnum();
+}
+
+// Root wrapper for every dashboard view.
+.view {
+  min-width: 0;
+}
+
+// Toolbar row every view puts at the top (selectors + refresh/last-updated).
+// The section title/description already live in the topbar, so views do not
+// repeat an <h1>.
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: @sp-3;
+  flex-wrap: wrap;
+  margin-bottom: @sp-5;
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: @sp-3;
+    flex-wrap: wrap;
+  }
+  &__spacer {
+    margin-left: auto;
+  }
+}
+
+// "Odświeżono …" + spinner cluster
+.updated {
+  display: inline-flex;
+  align-items: center;
+  gap: @sp-2;
+  color: @text-muted;
+  font-size: @fs-xs;
+  .tnum();
+
+  .btn {
+    height: 30px;
+    padding: 0 @sp-3;
+  }
+}
+
+// Vertical stack of cards with consistent gap
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: @sp-4;
+}
+
+// Standard chart body height wrapper (keeps cards aligned)
+.chart {
+  width: 100%;
+}
+
+// Section label between blocks
+.section-label {
+  font-size: @fs-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: @text-muted;
+  font-weight: @fw-semibold;
+  margin: @sp-2 0 @sp-1;
+}

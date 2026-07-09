@@ -1,0 +1,33 @@
+@import "../styles/theme.less";
+
+.range-seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: @surface-3;
+  border: 1px solid @border;
+  border-radius: @radius;
+
+  &__btn {
+    height: 26px;
+    padding: 0 @sp-3;
+    border-radius: @radius-sm;
+    font-size: @fs-xs;
+    font-weight: @fw-medium;
+    color: @text-secondary;
+    transition: background @dur @ease, color @dur @ease;
+    .tnum();
+
+    &:hover {
+      color: @text-primary;
+    }
+    &.is-active {
+      background: @accent;
+      color: #fff;
+      box-shadow: @shadow-sm;
+    }
+    &:focus-visible {
+      .focus-ring();
+    }
+  }
+}

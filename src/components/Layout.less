@@ -1,0 +1,243 @@
+@import "../styles/theme.less";
+
+.layout {
+  display: grid;
+  grid-template-columns: @sidebar-w 1fr;
+  height: 100%;
+  min-height: 100%;
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────────────
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: @surface-1;
+  border-right: 1px solid @border;
+  min-height: 0;
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: @sp-2 + 2;
+    height: @topbar-h;
+    padding: 0 @sp-4;
+    border-bottom: 1px solid @border;
+    flex: none;
+  }
+
+  &__logo {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: @radius;
+    background: @accent-quiet;
+    color: @accent;
+    flex: none;
+  }
+
+  &__brand-text {
+    font-size: @fs-md;
+    line-height: 1.1;
+    b {
+      font-weight: @fw-bold;
+      color: @text-primary;
+    }
+    span {
+      color: @text-muted;
+      font-weight: @fw-normal;
+    }
+  }
+
+  &__close {
+    display: none;
+    margin-left: auto;
+    color: @text-secondary;
+    padding: @sp-1;
+    &:hover { color: @text-primary; }
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: @sp-3;
+    overflow-y: auto;
+    flex: 1;
+    .scrollbar();
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: @sp-3;
+    height: 38px;
+    padding: 0 @sp-3;
+    border-radius: @radius;
+    color: @text-secondary;
+    font-size: @fs-md;
+    font-weight: @fw-medium;
+    transition: background @dur @ease, color @dur @ease;
+
+    &-icon {
+      color: @text-muted;
+      transition: color @dur @ease;
+      flex: none;
+    }
+    &:hover {
+      background: @surface-2;
+      color: @text-primary;
+      .sidebar__link-icon { color: @text-secondary; }
+    }
+    &.is-active {
+      background: @accent-quiet;
+      color: @accent-hover;
+      .sidebar__link-icon { color: @accent; }
+    }
+  }
+
+  &__foot {
+    flex: none;
+    padding: @sp-3;
+    border-top: 1px solid @border;
+    display: flex;
+    flex-direction: column;
+    gap: @sp-2;
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: @sp-2 + 2;
+    padding: @sp-1;
+  }
+
+  &__avatar {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: @accent;
+    color: #fff;
+    font-weight: @fw-bold;
+    font-size: @fs-md;
+    flex: none;
+  }
+
+  &__user-meta {
+    line-height: 1.2;
+    min-width: 0;
+    b { color: @text-primary; font-weight: @fw-semibold; display: block; .truncate(); }
+    span { color: @text-muted; font-size: @fs-xs; }
+  }
+
+  &__logout {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// ── Main column ────────────────────────────────────────────────────────────
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: @sp-3;
+  height: @topbar-h;
+  flex: none;
+  padding: 0 @sp-5;
+  border-bottom: 1px solid @border;
+  background: fade(#0b0e14, 80%);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  &__menu {
+    display: none;
+    color: @text-secondary;
+    padding: @sp-1;
+    &:hover { color: @text-primary; }
+  }
+
+  &__titles {
+    min-width: 0;
+    h1 {
+      font-size: @fs-lg;
+      font-weight: @fw-semibold;
+      .truncate();
+    }
+    p {
+      font-size: @fs-xs;
+      color: @text-muted;
+      .truncate();
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  .scrollbar();
+
+  &__inner {
+    max-width: @content-max;
+    margin: 0 auto;
+    padding: @sp-6 @sp-5 @sp-10;
+  }
+}
+
+.layout__scrim {
+  display: none;
+}
+
+// ── Responsive: off-canvas drawer under @bp-md ──────────────────────────────
+
+@media (max-width: (@bp-md - 1px)) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(84vw, @sidebar-w + 40px);
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 200ms @ease;
+    box-shadow: @shadow-lg;
+  }
+
+  .layout--drawer .sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar__close {
+    display: block;
+  }
+
+  .topbar__menu {
+    display: block;
+  }
+
+  .layout--drawer .layout__scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .content__inner {
+    padding: @sp-4 @sp-4 @sp-8;
+  }
+}

@@ -1,0 +1,62 @@
+@import "../styles/theme.less";
+
+.card {
+  .card();
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  box-shadow: @shadow-sm;
+
+  &--span {
+    grid-column: 1 / -1;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: @sp-3;
+    padding: @sp-4 @sp-4 0;
+  }
+
+  &__titles {
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__title {
+    font-size: @fs-md;
+    font-weight: @fw-semibold;
+    color: @text-primary;
+    .truncate();
+  }
+
+  &__subtitle {
+    font-size: @fs-xs;
+    color: @text-muted;
+    margin-top: 2px;
+  }
+
+  &__actions {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: @sp-2;
+  }
+
+  &__body {
+    padding: @sp-4;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &--flush &__body {
+    padding: 0;
+  }
+
+  &__foot {
+    padding: @sp-3 @sp-4;
+    border-top: 1px solid @border;
+    color: @text-muted;
+    font-size: @fs-xs;
+  }
+}

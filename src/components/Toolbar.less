@@ -1,0 +1,50 @@
+@import "../styles/theme.less";
+
+.last-updated {
+  color: @text-muted;
+  font-size: @fs-xs;
+  white-space: nowrap;
+  .tnum();
+}
+
+.refresh-btn {
+  &__label {
+    @media (max-width: @bp-sm) {
+      display: none;
+    }
+  }
+}
+
+.live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: @sp-2;
+  font-size: @fs-xs;
+  font-weight: @fw-medium;
+  color: @good;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &__pulse {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: @good;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: @good;
+      animation: live-pulse 1.8s @ease infinite;
+    }
+  }
+}
+
+@keyframes live-pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  70%,
+  100% { transform: scale(3); opacity: 0; }
+}

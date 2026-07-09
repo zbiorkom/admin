@@ -1,0 +1,102 @@
+@import "../styles/theme.less";
+
+.dtable-wrap {
+  width: 100%;
+  overflow-x: auto;
+  .scrollbar();
+}
+
+.dtable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: @fs-sm;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: @surface-1;
+    z-index: 1;
+    color: @text-muted;
+    font-weight: @fw-semibold;
+    font-size: @fs-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: @sp-3 @sp-3;
+    border-bottom: 1px solid @border-strong;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  // when header shouldn't stick, drop the sticky positioning
+  thead:not(.dtable--sticky) th {
+    position: static;
+  }
+
+  &__th-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: @sp-1 + 2;
+  }
+
+  &__sortable {
+    cursor: pointer;
+    &:hover {
+      color: @text-secondary;
+    }
+  }
+  &__sorted {
+    color: @text-secondary;
+  }
+  &__caret {
+    font-size: 9px;
+    opacity: 0.7;
+  }
+
+  tbody td {
+    padding: @sp-3 @sp-3;
+    border-bottom: 1px solid @border;
+    color: @text-primary;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr[data-clickable] {
+    cursor: pointer;
+  }
+  tbody tr:hover {
+    background: @surface-2;
+  }
+
+  &__mono {
+    font-family: @font-mono;
+    .tnum();
+    font-size: @fs-xs;
+  }
+
+  &--compact {
+    thead th {
+      padding: @sp-2 @sp-3;
+    }
+    tbody td {
+      padding: @sp-2 @sp-3;
+    }
+  }
+
+  &__empty td {
+    text-align: center;
+    color: @text-muted;
+    padding: @sp-8 @sp-4 !important;
+  }
+
+  // helper row states used via rowClass
+  tr.row-danger td {
+    background: fade(#d03b3b, 8%);
+  }
+  tr.row-warn td {
+    background: fade(#fab219, 7%);
+  }
+}

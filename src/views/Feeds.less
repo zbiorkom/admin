@@ -1,0 +1,37 @@
+@import "../styles/theme.less";
+
+// Mini avg/max duration bar rendered inside the DataTable "Czas (avg/max)" cell.
+// Track = max_ms extent (faint), fill = avg_ms extent (accent). Widths are set
+// inline via the `--w` custom property (dynamic numeric values).
+.feed-bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: @radius-pill;
+  background: @surface-3;
+  overflow: hidden;
+
+  &__track,
+  &__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--w, 0%);
+    border-radius: @radius-pill;
+  }
+  &__track {
+    background: @border-strong;
+  }
+  &__fill {
+    background: @accent;
+  }
+}
+
+// Fail-rate row emphasis in the feeds table.
+.row-warn td {
+  background: @warning-quiet;
+}
+.row-danger td {
+  background: @critical-quiet;
+}
