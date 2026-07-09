@@ -102,7 +102,16 @@ export function Overview() {
     }
     const meanPct = wTotal > 0 ? wSum / wTotal : null;
 
-    return { positions, meanPct };
+    // RAM/Swap/SAB are process-wide and reported only by the "main" worker.
+    const main = (res.data?.workers ?? []).find((w) => w.role === "main") ?? null;
+
+    return {
+      positions,
+      meanPct,
+      ram: main?.ram_bytes ?? null,
+      swap: main?.swap_bytes ?? null,
+      sab: main?.sab_bytes ?? null,
+    };
   }, [res.data]);
 
   const cities = useMemo(
@@ -130,14 +139,6 @@ export function Overview() {
         return <span className={`pill${cls}`}>{fmtNum(w.cpu_pct, 1)}%</span>;
       },
       sortValue: (w) => w.cpu_pct,
-    },
-    {
-      key: "rss_bytes",
-      header: "RSS",
-      align: "right",
-      mono: true,
-      render: (w) => fmtBytes(w.rss_bytes),
-      sortValue: (w) => w.rss_bytes,
     },
     {
       key: "heap_bytes",
@@ -283,6 +284,16 @@ export function Overview() {
                 hint="ważona pozycjami"
               />
               <StatTile label="Workery" value={fmtInt(data.workers.length)} />
+              <StatTile
+                label="RAM procesu"
+                value={fmtBytes(kpi.ram)}
+                hint="PSS całości (main)"
+              />
+              <StatTile
+                label="SAB"
+                value={fmtBytes(kpi.sab)}
+                hint={`swap ${fmtBytes(kpi.swap)}`}
+              />
               <StatTile
                 label="Crashe (50)"
                 value={fmtInt(data.events.length)}

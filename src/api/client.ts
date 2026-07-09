@@ -15,7 +15,12 @@ import type {
   WorkerPoint,
 } from "./types";
 
-/** Backend origin. Empty string in dev → relative URLs hit the Vite proxy. */
+/**
+ * Backend origin. In production `.env.production` sets it to
+ * https://api.zbiorkom.live (cross-origin; CORS + SameSite between *.zbiorkom.live
+ * subdomains). Empty → relative same-origin requests. For local dev set
+ * VITE_API_BASE in a `.env.local` (there is no dev proxy).
+ */
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 const PREFIX = "/api6/admin";
 

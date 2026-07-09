@@ -61,26 +61,40 @@ export function Workers() {
     x.forEach((t, i) => xIndex.set(t, i));
 
     // Per-worker arrays aligned to x (null where that worker has no sample).
+    // heap is the only per-worker memory signal; ram/swap/sab are process-wide.
     interface Slot {
       cpu: (number | null)[];
-      rss: (number | null)[];
+      heap: (number | null)[];
       lag: (number | null)[];
     }
     const byWorker = new Map<string, Slot>();
     for (const w of workers) {
       byWorker.set(w, {
         cpu: new Array<number | null>(x.length).fill(null),
-        rss: new Array<number | null>(x.length).fill(null),
+        heap: new Array<number | null>(x.length).fill(null),
         lag: new Array<number | null>(x.length).fill(null),
       });
     }
+
+    // Process-wide memory series (reported only by role "main").
+    const ram = new Array<number | null>(x.length).fill(null);
+    const swap = new Array<number | null>(x.length).fill(null);
+    const sab = new Array<number | null>(x.length).fill(null);
+
     for (const r of rows) {
-      const slot = byWorker.get(r.worker);
       const i = xIndex.get(tsToUnix(r.bucket));
-      if (!slot || i == null) continue;
-      slot.cpu[i] = r.cpu_pct;
-      slot.rss[i] = r.rss_bytes;
-      slot.lag[i] = r.event_loop_lag_ms;
+      if (i == null) continue;
+      const slot = byWorker.get(r.worker);
+      if (slot) {
+        slot.cpu[i] = r.cpu_pct;
+        slot.heap[i] = r.heap_bytes;
+        slot.lag[i] = r.event_loop_lag_ms;
+      }
+      if (r.role === "main") {
+        ram[i] = r.ram_bytes;
+        swap[i] = r.swap_bytes;
+        sab[i] = r.sab_bytes;
+      }
     }
 
     // Top-8 workers by peak value for one metric (cap at 8 categorical colors).
@@ -104,10 +118,6 @@ export function Workers() {
       };
     };
 
-    const latestRss = workers.map((w) => lastVal(byWorker.get(w)!.rss));
-    const sumRss = workers.length
-      ? latestRss.reduce<number>((a, v) => a + (v ?? 0), 0)
-      : null;
     const latestCpu = workers
       .map((w) => lastVal(byWorker.get(w)!.cpu))
       .filter((v): v is number => v != null);
@@ -116,10 +126,14 @@ export function Workers() {
     return {
       x,
       workerCount: workers.length,
-      sumRss,
       maxCpu,
+      ramProc: lastVal(ram),
+      swapProc: lastVal(swap),
+      sabProc: lastVal(sab),
+      hasProcMem: ram.some((v) => v != null),
+      procMem: [ram, swap, sab] as (number | null)[][],
       cpu: topChart("cpu"),
-      rss: topChart("rss"),
+      heap: topChart("heap"),
       lag: topChart("lag"),
     };
   }, [res.data]);
@@ -164,11 +178,16 @@ export function Workers() {
         {() => (
           <div className="stack">
             <div className="grid" style={{ ["--min" as string]: "210px" }}>
-              <StatTile label="Workery" value={fmtInt(model.workerCount)} hint="unikalne procesy" />
+              <StatTile label="Workery" value={fmtInt(model.workerCount)} hint="unikalne wątki" />
               <StatTile
-                label="Suma RSS"
-                value={fmtBytes(model.sumRss)}
-                hint="ostatnie próbki"
+                label="RAM procesu"
+                value={fmtBytes(model.ramProc)}
+                hint="PSS całości (main)"
+              />
+              <StatTile
+                label="SAB"
+                value={fmtBytes(model.sabProc)}
+                hint={`swap ${fmtBytes(model.swapProc)}`}
               />
               <StatTile
                 label="Maks. CPU"
@@ -205,24 +224,46 @@ export function Workers() {
                 )}
               </Card>
 
-              <Card title="Pamięć RSS per worker" subtitle="Rezydentny zbiór pamięci (RSS)">
+              <Card
+                title="Sterta JS (heap) per worker"
+                subtitle="Jedyny sensowny sygnał „który worker puchnie” — heap każdego workera"
+              >
                 <UPlotChart
                   x={model.x}
-                  data={model.rss.data}
-                  series={model.rss.labels.map((label, i) => ({
+                  data={model.heap.data}
+                  series={model.heap.labels.map((label, i) => ({
                     label,
-                    color: model.rss.colors[i],
+                    color: model.heap.colors[i],
                     fmt: (v) => fmtBytes(v),
                   }))}
                   yFmt={(v) => fmtBytes(v)}
                   zeroBased
                 />
-                {model.rss.total > model.rss.shown && (
+                {model.heap.total > model.heap.shown && (
                   <p className="workers__note">
-                    pokazano {model.rss.shown} z {model.rss.total} workerów
+                    pokazano {model.heap.shown} z {model.heap.total} workerów
                   </p>
                 )}
               </Card>
+
+              {model.hasProcMem && (
+                <Card
+                  title="Pamięć procesu (main)"
+                  subtitle="PSS / SwapPss / SharedArrayBuffer całego procesu — raportowane przez main"
+                >
+                  <UPlotChart
+                    x={model.x}
+                    data={model.procMem}
+                    series={[
+                      { label: "RAM (PSS)", color: SERIES[0], fill: true, fmt: (v) => fmtBytes(v) },
+                      { label: "Swap", color: SERIES[2], fmt: (v) => fmtBytes(v) },
+                      { label: "SAB", color: SERIES[4], fmt: (v) => fmtBytes(v) },
+                    ]}
+                    yFmt={(v) => fmtBytes(v)}
+                    zeroBased
+                  />
+                </Card>
+              )}
 
               <Card title="Event loop lag (ms) per worker" subtitle="Opóźnienie pętli zdarzeń">
                 <UPlotChart

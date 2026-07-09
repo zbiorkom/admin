@@ -65,7 +65,6 @@ export interface RealtimeSnapshot {
   positions: number;
   matched: number;
   ghost: number;
-  conflicts: number;
   /** 100 * matched / positions; null when positions = 0. */
   matched_pct: number | null;
 }
@@ -85,10 +84,14 @@ export interface WorkerSnapshot {
   worker: string;
   ts: string;
   cpu_pct: number;
-  rss_bytes: number;
+  /** JS heap of THIS worker — the only per-worker memory signal. */
   heap_bytes: number;
   event_loop_lag_ms: number;
-  /** Meaningful only for role === "main"; others report 0. */
+  /** Process-wide PSS (RAM). Reported only by role "main"; others report 0. */
+  ram_bytes: number;
+  /** Process-wide SwapPss. Reported only by role "main"; others report 0. */
+  swap_bytes: number;
+  /** Total SharedArrayBuffer. Reported only by role "main"; others report 0. */
   sab_bytes: number;
 }
 
@@ -115,7 +118,6 @@ export interface RealtimePoint {
   positions: number;
   matched: number;
   ghost: number;
-  conflicts: number;
   matched_pct: number | null;
 }
 
@@ -174,9 +176,12 @@ export interface WorkerPoint {
   role: WorkerRole;
   worker: string;
   cpu_pct: number;
-  rss_bytes: number;
+  /** JS heap of THIS worker — the only per-worker memory signal. */
   heap_bytes: number;
   event_loop_lag_ms: number;
+  /** Process-wide PSS / SwapPss / SharedArrayBuffer — role "main" only; others 0. */
+  ram_bytes: number;
+  swap_bytes: number;
   sab_bytes: number;
 }
 
