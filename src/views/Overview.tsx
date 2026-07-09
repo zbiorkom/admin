@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { metricsApi } from "../api/client";
 import type {
   CompileRow,
-  RealtimeSnapshot,
+  Range,
   WorkerEvent,
   WorkerSnapshot,
 } from "../api/types";
 import { useApi } from "../hooks/useApi";
+import { useStickyState } from "../hooks/useStickyState";
 import {
   cityLabel,
   fmtBytes,
@@ -17,11 +18,15 @@ import {
   fmtPct,
   fmtRelative,
   tsToMs,
+  tsToUnix,
 } from "../lib/format";
+import { SERIES } from "../theme/palette";
 import { Async, EmptyState } from "../components/States";
 import { Card } from "../components/Card";
 import { StatTile, type StatStatus } from "../components/StatTile";
 import { DataTable, type Column } from "../components/DataTable";
+import { RangeSelector } from "../components/RangeSelector";
+import { UPlotChart } from "../components/UPlotChart";
 import { LastUpdated, RefreshButton, LiveDot } from "../components/Toolbar";
 import "./Overview.less";
 
@@ -40,13 +45,52 @@ function pctPill(pct: number | null) {
   return <span className={`pill${cls}`}>{fmtPct(pct, 1)}</span>;
 }
 
+/** One small-multiple chart: a single city's realtime series over `range`. */
+function CityChart({ city, range }: { city: string; range: Range }) {
+  const res = useApi(() => metricsApi.realtime(city, range), [city, range]);
+
+  const s = useMemo(() => {
+    const pts = res.data ?? [];
+    return {
+      x: pts.map((p) => tsToUnix(p.bucket)),
+      positions: pts.map((p) => p.positions),
+      matched: pts.map((p) => p.matched),
+      last: pts[pts.length - 1],
+    };
+  }, [res.data]);
+
+  return (
+    <Card
+      title={cityLabel(city)}
+      subtitle={s.last ? `${fmtInt(s.last.positions)} pozycji` : "—"}
+      actions={s.last ? pctPill(s.last.matched_pct) : null}
+    >
+      <Async result={res} isEmpty={(d) => d.length === 0}>
+        {() => (
+          <UPlotChart
+            x={s.x}
+            data={[s.positions, s.matched]}
+            series={[
+              { label: "Pozycje", color: SERIES[0], fill: true, fmt: (v) => fmtNum(v, 1) },
+              { label: "Dopasowane", color: SERIES[1], fill: true, fmt: (v) => fmtNum(v, 1) },
+            ]}
+            yFmt={(v) => fmtInt(v)}
+            zeroBased
+            height={168}
+          />
+        )}
+      </Async>
+    </Card>
+  );
+}
+
 export function Overview() {
   const res = useApi(() => metricsApi.overview(), [], { refreshMs: 15000 });
+  const [range, setRange] = useStickyState<Range>("ov.range", "24h");
 
   const kpi = useMemo(() => {
     const rt = res.data?.realtime ?? [];
     const positions = rt.reduce((a, r) => a + r.positions, 0);
-    const conflicts = rt.reduce((a, r) => a + r.conflicts, 0);
 
     // Positions-weighted mean of matched_pct (ignoring rows without a value).
     let wSum = 0;
@@ -58,65 +102,13 @@ export function Overview() {
     }
     const meanPct = wTotal > 0 ? wSum / wTotal : null;
 
-    return { positions, conflicts, meanPct };
+    return { positions, meanPct };
   }, [res.data]);
 
-  const rtCols: Column<RealtimeSnapshot>[] = [
-    {
-      key: "city",
-      header: "Miasto",
-      render: (r) => cityLabel(r.city),
-      sortValue: (r) => r.city,
-    },
-    {
-      key: "positions",
-      header: "Pozycje",
-      align: "right",
-      mono: true,
-      render: (r) => fmtInt(r.positions),
-      sortValue: (r) => r.positions,
-    },
-    {
-      key: "matched",
-      header: "Dopasowane",
-      align: "right",
-      mono: true,
-      render: (r) => fmtInt(r.matched),
-      sortValue: (r) => r.matched,
-    },
-    {
-      key: "matched_pct",
-      header: "Skuteczność",
-      align: "right",
-      mono: true,
-      render: (r) => pctPill(r.matched_pct),
-      sortValue: (r) => r.matched_pct ?? -1,
-    },
-    {
-      key: "ghost",
-      header: "Ghost",
-      align: "right",
-      mono: true,
-      render: (r) => fmtInt(r.ghost),
-      sortValue: (r) => r.ghost,
-    },
-    {
-      key: "conflicts",
-      header: "Konflikty",
-      align: "right",
-      mono: true,
-      render: (r) => fmtInt(r.conflicts),
-      sortValue: (r) => r.conflicts,
-    },
-    {
-      key: "ts",
-      header: "Aktualizacja",
-      align: "right",
-      mono: true,
-      render: (r) => <span title={fmtDateTime(r.ts)}>{fmtRelative(r.ts)}</span>,
-      sortValue: (r) => tsToMs(r.ts),
-    },
-  ];
+  const cities = useMemo(
+    () => (res.data?.realtime ?? []).map((r) => r.city).sort(),
+    [res.data],
+  );
 
   const workerCols: Column<WorkerSnapshot>[] = [
     { key: "role", header: "Rola", render: (w) => w.role, sortValue: (w) => w.role },
@@ -257,6 +249,7 @@ export function Overview() {
       <div className="toolbar">
         <div className="toolbar__group">
           <LiveDot />
+          <RangeSelector value={range} onChange={setRange} />
         </div>
         <div className="toolbar__group toolbar__spacer updated">
           <LastUpdated at={res.lastUpdated} />
@@ -289,12 +282,6 @@ export function Overview() {
                 status={matchStatus(kpi.meanPct)}
                 hint="ważona pozycjami"
               />
-              <StatTile
-                label="Konflikty"
-                value={fmtInt(kpi.conflicts)}
-                status={kpi.conflicts > 0 ? "warning" : "good"}
-                hint="suma miast"
-              />
               <StatTile label="Workery" value={fmtInt(data.workers.length)} />
               <StatTile
                 label="Crashe (50)"
@@ -304,18 +291,20 @@ export function Overview() {
               />
             </div>
 
-            <Card title="Realtime — miasta" flush>
-              {data.realtime.length === 0 ? (
-                <EmptyState title="Brak danych realtime" />
+            <div>
+              <div className="section-label">Realtime — miasta</div>
+              {cities.length === 0 ? (
+                <Card>
+                  <EmptyState title="Brak danych realtime" />
+                </Card>
               ) : (
-                <DataTable
-                  columns={rtCols}
-                  rows={data.realtime}
-                  rowKey={(r) => r.city}
-                  defaultSort={{ key: "positions", dir: "desc" }}
-                />
+                <div className="grid" style={{ ["--min" as string]: "380px" }}>
+                  {cities.map((city) => (
+                    <CityChart key={city} city={city} range={range} />
+                  ))}
+                </div>
               )}
-            </Card>
+            </div>
 
             <Card title="Workery" flush>
               {data.workers.length === 0 ? (

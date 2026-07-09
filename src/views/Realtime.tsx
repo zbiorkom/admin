@@ -41,14 +41,13 @@ export function Realtime() {
       positions: pts.map((p) => p.positions),
       matched: pts.map((p) => p.matched),
       ghost: pts.map((p) => p.ghost),
-      conflicts: pts.map((p) => p.conflicts),
       matchedPct: pts.map((p) => p.matched_pct),
     };
   }, [res.data]);
 
   const pts = res.data ?? [];
   const last = pts[pts.length - 1];
-  const totalConflicts = pts.reduce((a, p) => a + p.conflicts, 0);
+  const totalGhost = pts.reduce((a, p) => a + p.ghost, 0);
 
   return (
     <div className="view">
@@ -91,12 +90,11 @@ export function Realtime() {
                   sparkColor={STATUS.good}
                 />
                 <StatTile
-                  label="Konflikty"
-                  value={fmtInt(totalConflicts)}
+                  label="Ghost"
+                  value={fmtInt(totalGhost)}
                   hint="suma w oknie"
-                  status={totalConflicts > 0 ? "warning" : "good"}
-                  spark={s.conflicts}
-                  sparkColor={SERIES[5]}
+                  spark={s.ghost}
+                  sparkColor={SERIES[7]}
                 />
               </div>
 
@@ -140,15 +138,14 @@ export function Realtime() {
                 </Card>
 
                 <Card
-                  title="Ghost i konflikty"
-                  subtitle="Pozycje-ghost oraz konflikty block/trip"
+                  title="Pozycje-ghost"
+                  subtitle="Średnia liczba pozycji-ghost w buckecie"
                 >
                   <UPlotChart
                     x={s.x}
-                    data={[s.ghost, s.conflicts]}
+                    data={[s.ghost]}
                     series={[
                       { label: "Ghost", color: SERIES[7], fill: true, fmt: (v) => fmtNum(v, 1) },
-                      { label: "Konflikty", color: SERIES[5], fmt: (v) => fmtInt(v) },
                     ]}
                     yFmt={(v) => fmtInt(v)}
                     zeroBased

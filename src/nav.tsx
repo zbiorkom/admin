@@ -27,7 +27,7 @@ export const NAV: NavItem[] = [
   {
     to: "/realtime",
     label: "Realtime",
-    desc: "Pozycje pojazdów, dopasowania i konflikty w czasie — per miasto.",
+    desc: "Pozycje pojazdów i dopasowania w czasie — per miasto.",
     Icon: IconActivity,
   },
   {
